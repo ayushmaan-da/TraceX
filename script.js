@@ -148,26 +148,26 @@ document.getElementById("country").onchange = e => {
   let n = getNationality(i)
 
   let map = {
-    "india": ["india", "indian"],   "united states": ["united states", "usa", "us", "american"],
-    "united kingdom": ["uk", "british", "england"], "canada": ["canada", "canadian"],
-    "australia": ["australia", "australian"], "germany": ["germany", "german"],
-    "france": ["france", "french"], "italy": ["italy", "italian"], "spain": ["spain", "spanish"],
-    "netherlands": ["netherlands", "dutch"],
-    "brazil": ["brazil", "brazilian"],
-    "mexico": ["mexico", "mexican"],
-    "argentina": ["argentina", "argentinian"],
-    "south africa": ["south africa"],
-    "nigeria": ["nigeria", "nigerian"],
-    "china": ["china", "chinese"],
-    "japan": ["japan", "japanese"],
-    "south korea": ["korea", "korean"],
-    "russia": ["russia", "russian"],
-    "turkey": ["turkey", "turkish"],
-    "saudi arabia": ["saudi"],
-    "uae": ["uae", "emirati"],
-    "indonesia": ["indonesia", "indonesian"],
-    "pakistan": ["pakistan", "pakistani"],
-    "bangladesh": ["bangladesh", "bangladeshi"]
+    india: ["india", "indian"],   unitedstates: ["united states", "usa", "us", "american"],
+    unitedkingdom: ["uk", "british", "england"], canada: ["canada", "canadian"],
+    australia: ["australia", "australian"], germany: ["germany", "german"],
+    france: ["france", "french"], italy: ["italy", "italian"], spain: ["spain", "spanish"],
+    netherlands: ["netherlands", "dutch"],
+    brazil: ["brazil", "brazilian"],
+    mexico: ["mexico", "mexican"],
+    argentina: ["argentina", "argentinian"],
+    southafrica: ["south africa"],
+    nigeria : ["nigeria", "nigerian"],
+    china : ["china", "chinese"],
+    japan : ["japan", "japanese"],
+    southkorea: ["korea", "korean"],
+    russia : ["russia", "russian"],
+    turkey : ["turkey", "turkish"],
+    saudiarabia : ["saudi"],
+    uae: ["uae", "emirati"],
+    indonesia: ["indonesia", "indonesian"],
+    pakistan: ["pakistan", "pakistani"],
+    bangladesh: ["bangladesh", "bangladeshi"]
   }
   return map[val.toLowerCase()]?.some(x => n.includes(x))
 })
@@ -220,7 +220,7 @@ function toggleFav(i) {
   } else {
     fav.push(i);
   }
-  localStorage.setItem("fav", JSON.stringify(fav));
+localStorage.setItem("fav", JSON.stringify(fav));
 }
 
 function switchView(v) {
@@ -229,9 +229,22 @@ function switchView(v) {
 
   if (v === "fav") {
   page = 1;
-  totalPages = Math.ceil(fav.length / 102) || 1;
+
+  if (fav.length === 0) {
+    main.innerHTML = `
+      <div class="empty">
+        <h2>❤️ No Favorites Yet</h2>
+        <p>You haven't added anything yet.</p>
+        <button onclick="switchView('home')">Go to Home</button>
+      </div>
+    `;
+    return;
+  }
+
+  totalPages = Math.ceil(fav.length / 102);
   render(fav.slice(0, 102));
-  } else {
+}
+   else {
     page = 1;
     render(data.slice(0, 102));
   }
