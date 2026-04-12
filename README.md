@@ -37,6 +37,7 @@ A modern web application that displays FBI data of wanted criminals and missing 
 
 ## 📁 Project Structure
 TraceX/
+
 ├── index.html   
 ├── script.js  
 └── README.md  
