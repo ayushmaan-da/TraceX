@@ -1,44 +1,42 @@
 # 🕵️ TraceX
-A web application that displays FBI data of wanted criminals and missing persons using a public API. Users can search, filter, sort, and explore detailed case information through an interactive interface.
+
+A modern web application that displays FBI data of wanted criminals and missing persons using a public API. Users can search, filter, sort, and explore detailed case information through an interactive and responsive interface.
 
 ---
 
-Original Api: https://www.fbi.gov/wanted/api
+## 🔗 Live Demo
+🌐 https://tracex-flame.vercel.app/
 
-## 🔗 API Used
-Trace API: https://trace-api-quqk.onrender.com/api/data
-
-Deployed website link : https://tracex-flame.vercel.app/     
 ---
-Deploy :  https://tracex-flame.vercel.app/
 
+## 🔗 APIs Used
+- Original API: https://www.fbi.gov/wanted/api  
+- Custom Trace API: https://trace-api-quqk.onrender.com/api/data  
 
+---
 
 ## 🚀 Features
-- 🔍 Search   
-- 🌍 Filter by nationality (smart mapping system)  
-- 🔃 A-Z / Z-A sorting   
-- ❤️ Favorites stored in localStorage  
-- 📑 Modal for detailed case info  
-- 📎 PDF document support  
+- 🔍 Real-time search functionality  
+- 🌍 Filter by nationality 
+- 🔃 Sorting (A–Z / Z–A)  
+- ❤️ Favorites system using localStorage  
+- 📑 Detailed modal view for each case  
+- 📎 PDF/document support  
 - 🌙 Dark / Light mode 
-
+- 📱 Responsive UI design  
 
 ---
 
 ## 🛠️ Tech Stack
-- HTML
-- CSS 
+- HTML 
+- CSS
 - JavaScript (ES6)  
-- Fetch API   
+- Fetch API  
 
 ---
 
-## 📁 Structure
+## 📁 Project Structure
 TraceX/
 ├── index.html   
 ├── script.js  
 └── README.md  
-
----
-
