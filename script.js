@@ -1,4 +1,4 @@
-const API = "https://api.fbi.gov/wanted/v1/list";
+const API = "https://trace-api-quqk.onrender.com/api/data"; 
 
 let data = [];
 let page = 1;
@@ -6,14 +6,13 @@ let totalPages = 1;
 let fav = JSON.parse(localStorage.getItem("fav")) || [];
 let currentView = "home";
 
-
 document.getElementById("nav").innerHTML = `
   <h2>TraceX</h2>
 
   <div>
     <button onclick="switchView('home')">Home</button>
     <button onclick="switchView('fav')">Favorites</button>
-    <button onclick="switchView('about')">About</button>
+    
 
     <input id="search" placeholder="Search">
 
@@ -31,31 +30,48 @@ document.getElementById("nav").innerHTML = `
   </div>
 `;
 
-
+fillCountries();
 async function load() {
   let main = document.getElementById("main");
-  main.innerHTML = "<h2>Loading...</h2>";
+  main.innerHTML = "<h2>Loading all data...</h2>";
 
   try {
-    let res = await fetch(`${API}?page=${page}`);
-    let json = await res.json();
+    data = [];
+    let currentPage = 1;
+    let hasMore = true;
 
-    data = json.items;
-    totalPages = Math.ceil(json.total / 50);
+    while (hasMore) {
+      let res = await fetch(`${API}?page=${currentPage}`);
+      let json = await res.json();
 
-    fillCountries();
-    render(data);
-  } catch {
+      let pageData = json.data || json.items || [];
+
+      if (pageData.length === 0) {
+        hasMore = false;   
+      } else {
+        data = data.concat(pageData);
+        currentPage++;
+      }
+    }
+    data = Array.from(new Map(data.map(i => [i.uid || i.title, i])).values());
+
+    console.log("TOTAL LOADED:", data.length);
+
+    totalPages = Math.ceil(data.length / 102);
+    page = 1;
+
+    
+    render(data.slice(0, 102));
+
+  } catch (err) {
+    console.error(err);
     main.innerHTML = "<h2>Error loading data</h2>";
   }
 }
 
 load();
 
-
 function render(arr) {
-  if (currentView !== "home") return;
-
   let main = document.getElementById("main");
 
   main.innerHTML = `
@@ -69,59 +85,73 @@ function render(arr) {
 
   let grid = main.querySelector(".grid");
 
-  arr.map(i => {
+  
+  arr = arr.filter(i => i.title && typeof i.title === "string");
+  arr.forEach((i) => {
     let card = document.createElement("div");
     card.className = "card";
 
     card.innerHTML = `
-      <img src="${i.images?.[0]?.original || ''}">
-      <h4>${i.title}</h4>
-      <p>${i.subjects?.join(", ") || ""}</p>
+      
+      
+      <h4>${(i.title || "No Title").slice(0, 40)}</h4>
+      <p>${Array.isArray(i.subjects) ? i.subjects.join(", ") : ""}</p>  
 
-      <button onclick='openModal(${JSON.stringify(i)})'>More Info</button>
+      <button class="infoBtn">More Info</button>
       <button onclick='pdf("${i.files?.[0]?.url || ""}")'>PDF</button>
-      <button onclick='addFav(${JSON.stringify(i)})'>❤️</button>
+      <button class="favBtn">❤️</button>
     `;
+
+      card.querySelector(".infoBtn").onclick = () => openModal(i);
+      card.querySelector(".favBtn").onclick = () => toggleFav(i);
 
     grid.appendChild(card);
   });
 }
 
-
 document.getElementById("search").oninput = e => {
   let v = e.target.value.toLowerCase();
 
   let filtered = data.filter(i =>
-    i.title?.toLowerCase().includes(v) ||
+  i.title &&
+  (
+    i.title.toLowerCase().includes(v) ||
     i.subjects?.join().toLowerCase().includes(v) ||
     i.nationality?.toLowerCase().includes(v)
-  );
+  )
+);
 
-  render(filtered);
+  page = 1;
+totalPages = Math.ceil(filtered.length / 102);
+render(filtered.slice(0, 102));
 };
-
 
 document.getElementById("sort").onchange = e => {
   let val = e.target.value;
 
-  let sorted = [...data].sort((a,b)=>
+  let sorted = [...data].sort((a, b) =>
     val === "az"
-      ? a.title.localeCompare(b.title)
-      : b.title.localeCompare(a.title)
+      ? (a.title || "").localeCompare(b.title || "")
+      : (b.title || "").localeCompare(a.title || "")
   );
 
   render(sorted);
 };
 
-
 function fillCountries() {
   let c = document.getElementById("country");
 
-  let list = [...new Set(data.map(i=>i.nationality).filter(Boolean))];
+  let countries = [
+    "Indian", "United States", "United Kingdom", "Canada", "Australia",
+    "Germany", "France", "Italy", "Spain", "Netherlands",
+    "Brazil", "Mexico", "Argentina", "South Africa", "Nigeria",
+    "China", "Japan", "South Korea", "Russia", "Turkey",
+    "Saudi Arabia", "UAE", "Indonesia", "Pakistan", "Bangladesh"
+  ];
 
   c.innerHTML = `<option value="">All Nationalities</option>`;
 
-  list.map(n=>{
+  countries.forEach(n => {
     let o = document.createElement("option");
     o.value = n;
     o.textContent = n;
@@ -129,38 +159,84 @@ function fillCountries() {
   });
 }
 
+function getNationality(i) {
+  return (
+    i.nationality ||
+    i.country ||
+    i.place_of_birth ||
+    i.description ||
+    ""
+  ).toLowerCase();
+}
+
 document.getElementById("country").onchange = e => {
   let val = e.target.value;
 
   let filtered = val
-    ? data.filter(i=>i.nationality===val)
+    ? data.filter(i => {
+  let n = getNationality(i);
+
+  let map = {
+    "india": ["india", "indian"],
+    "united states": ["united states", "usa", "us", "american"],
+    "united kingdom": ["uk", "british", "england"],
+    "canada": ["canada", "canadian"],
+    "australia": ["australia", "australian"],
+    "germany": ["germany", "german"],
+    "france": ["france", "french"],
+    "italy": ["italy", "italian"],
+    "spain": ["spain", "spanish"],
+    "netherlands": ["netherlands", "dutch"],
+    "brazil": ["brazil", "brazilian"],
+    "mexico": ["mexico", "mexican"],
+    "argentina": ["argentina", "argentinian"],
+    "south africa": ["south africa"],
+    "nigeria": ["nigeria", "nigerian"],
+    "china": ["china", "chinese"],
+    "japan": ["japan", "japanese"],
+    "south korea": ["korea", "korean"],
+    "russia": ["russia", "russian"],
+    "turkey": ["turkey", "turkish"],
+    "saudi arabia": ["saudi"],
+    "uae": ["uae", "emirati"],
+    "indonesia": ["indonesia", "indonesian"],
+    "pakistan": ["pakistan", "pakistani"],
+    "bangladesh": ["bangladesh", "bangladeshi"]
+  };
+
+  return map[val.toLowerCase()]?.some(x => n.includes(x));
+})
     : data;
 
-  render(filtered);
-};
-
+  page = 1;
+  totalPages = Math.ceil(filtered.length / 102);
+  render(filtered.slice(0, 102));
+  };
 
 function next() {
   if (page < totalPages) {
     page++;
-    load();
+    let start = (page - 1) * 102;
+    let source = currentView === "fav" ? fav : data;
+    render(source.slice(start, start + 102));
   }
 }
 
 function prev() {
   if (page > 1) {
     page--;
-    load();
+    let start = (page - 1) * 102;
+    let source = currentView === "fav" ? fav : data;
+    render(source.slice(start, start + 102));
   }
 }
-
 
 function openModal(i) {
   document.getElementById("modal").style.display = "flex";
 
   document.getElementById("modalBox").innerHTML = `
     <button onclick="closeModal()">X</button>
-    <img src="${i.images?.[0]?.original || ''}">
+    
     <h2>${i.title}</h2>
     <p><b>Crime:</b> ${i.subjects?.join(", ")}</p>
     <p>${i.description || ""}</p>
@@ -172,42 +248,40 @@ function closeModal() {
   document.getElementById("modal").style.display = "none";
 }
 
-
 function pdf(url) {
-  if (url) window.open(url);
-}
-
-
-function addFav(i) {
-  if (!fav.find(f => f.uid === i.uid)) {
-    fav.push(i);
-    localStorage.setItem("fav", JSON.stringify(fav));
+  if (!url) {
+    alert("No PDF available");
+    return;
   }
+
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
+function toggleFav(i) {
+  let index = fav.findIndex(f => f.uid === i.uid);
+
+  if (index !== -1) {
+    fav.splice(index, 1);
+  } else {
+    fav.push(i);
+  }
+
+  localStorage.setItem("fav", JSON.stringify(fav));
+}
 
 function switchView(v) {
   currentView = v;
   let main = document.getElementById("main");
 
   if (v === "fav") {
-    main.innerHTML = "<h2>Favorites</h2>";
-
-    fav.map(i=>{
-      let d = document.createElement("div");
-      d.className = "card";
-      d.innerHTML = `<h4>${i.title}</h4>`;
-      main.appendChild(d);
-    });
-  }
-  else if (v === "about") {
-    main.innerHTML = "<h2>About</h2><p>FBI Wanted Tracker Project</p>";
-  }
-  else {
-    render(data);
+  page = 1;
+  totalPages = Math.ceil(fav.length / 102) || 1;
+  render(fav.slice(0, 102));
+  } else {
+    page = 1;
+    render(data.slice(0, 102));
   }
 }
-
 
 document.getElementById("theme").onclick = () => {
   document.body.classList.toggle("light");

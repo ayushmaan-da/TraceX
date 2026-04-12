@@ -15,11 +15,11 @@
     }
 
     .light {
-      background:#f5f5f5;
-      color:black;
-    }
+    background:#f5f5f5;
+    color:#111;
+}
 
-    /* NAVBAR */
+    
     #nav {
       display:flex;
       justify-content:space-between;
@@ -28,13 +28,17 @@
       background:#111827;
       flex-wrap:wrap;
     }
+    .light #nav {
+    background:#307abe;
+    color:#111;
+} 
 
     input, select, button {
       margin:5px;
       padding:6px;
     }
 
-    /* MAIN */
+    
     #main { padding:15px; }
 
     .grid {
@@ -45,38 +49,65 @@
 
     .card {
       background:#1e293b;
-      padding:10px;
-      border-radius:10px;
-      overflow:hidden;
+    padding:15px;
+    border-radius:10px;
+    min-height:120px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
     }
 
-    .card img {
-      width:100%;
-      height:180px;
-      object-fit:cover;
-      border-radius:10px;
-    }
+    .light .card {
+    background:#ffffff;
+    color:#111;
+}
 
-    .card h4, .card p {
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
+    .card h4 {
+    font-size:16px;
+    margin-bottom:8px;
+    word-break:break-word;
+  }
 
-    /* PAGINATION */
+  .card p {
+  font-size:13px;
+  color:#ccc;
+  word-break:break-word;
+  }
+
+  .light .card p {
+  color:#444;
+  }
+
+   
     .pagination {
       text-align:center;
       margin-top:20px;
     }
 
-    /* FOOTER */
+   
     #footer {
       text-align:center;
       padding:10px;
       background:#111827;
     }
+    .light #footer {
+    background:#e5e7eb;
+    color:#111;
+}
+    .favBtn {
+   transition: 0.2s;
+    }
 
-    /* MODAL */
+  .favBtn.active {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
+  }
+
+  .favBtn:hover {
+  transform: scale(1.15);
+  }
+  
     #modal {
       position:fixed;
       top:0;
@@ -99,6 +130,10 @@
       padding:20px;
       border-radius:10px;
     }
+    .light #modalBox {
+    background:#ffffff;
+    color:#111;
+}
 
     #modalBox img {
       width:100%;
