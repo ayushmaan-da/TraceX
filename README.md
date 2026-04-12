@@ -11,7 +11,8 @@ A modern web application that displays FBI data of wanted criminals and missing 
 
 ## 🔗 APIs Used
 - Original API: https://www.fbi.gov/wanted/api  
-- Custom Trace API: https://trace-api-quqk.onrender.com/api/data  
+- Custom Trace API: https://trace-api-quqk.onrender.com/api/data
+- Git Trace API Repo: https://github.com/ayushmaan-da/TraceApi
 
 ---
 
