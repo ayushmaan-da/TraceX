@@ -48,7 +48,10 @@ async function load() {
         currentPage++
       }
     }
-    data = Array.from(new Map(data.map(i => [i.uid || i.title, i])).values())
+    data = Array.from(
+    new Map(data.map(i => [i.uid || i.url || Math.random(), i]))
+    .values()
+);
     console.log("TOTAL LOADED:", data.length)
     totalPages = Math.ceil(data.length / 102)
     page = 1
