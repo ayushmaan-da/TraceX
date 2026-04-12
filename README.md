@@ -9,6 +9,7 @@ Original Api: https://www.fbi.gov/wanted/api
 Trace API: https://trace-api-quqk.onrender.com/api/data
 
 ---
+Deploy :  https://tracex-flame.vercel.app/
 
 ## 🚀 Features
 - 🔍 Search   
@@ -37,3 +38,4 @@ TraceX/
 └── README.md  
 
 ---
+
